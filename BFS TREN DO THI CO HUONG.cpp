@@ -9,25 +9,26 @@ using namespace std;
 
 const int MAX_N = 1e6 + 5;
 
-int n, m, u, v, s, t;
+int n, m, start;
 vector<vector<int>> graph;
-vector<int> trace;
 
-void bfs(int s) {
-    vector<bool> vis(n + 1, false);
+void bfs(int u, vector<bool> &vis, vector<int> &path)
+{
+    vis[u] = true;
+    path.push_back(u);
     queue<int> q;
-    q.push(s);
-    vis[s] = true;
-
-    while(!q.empty()) {
-        u = q.front();
+    q.push(u);
+    while (!q.empty())
+    {
+        int pos = q.front();
         q.pop();
-        if(u == t) return;
-        for(auto x : graph[u]) {
-            if(!vis[x]) {
+        for (auto x : graph[pos])
+        {
+            if (!vis[x])
+            {
                 vis[x] = true;
-                trace[x] = u;
                 q.push(x);
+                path.push_back(x);
             }
         }
     }
@@ -35,26 +36,19 @@ void bfs(int s) {
 
 void testCase()
 {
-    cin >> n >> m >> s >> t;
+    cin >> n >> m >> start;
     graph.assign(n + 1, vector<int>());
-    while(m--) {
+    for (int i = 0; i < m; i++)
+    {
+        int u, v;
         cin >> u >> v;
         graph[u].push_back(v);
     }
-    trace.assign(n + 1, 0);
-    bfs(s);
-    if(trace[t] == 0) {
-        cout << -1;
-        return;
-    }
-    vector<int> res;
-    int last = t;
-    while(last != 0) {
-        res.push_back(last);
-        last = trace[last];
-    }
-    reverse(res.begin(), res.end());
-    for(auto x : res) cout << x << " ";
+    vector<bool> vis(n + 1);
+    vector<int> path;
+    bfs(start, vis, path);
+    for (auto x : path)
+        cout << x << " ";
 }
 
 int main()

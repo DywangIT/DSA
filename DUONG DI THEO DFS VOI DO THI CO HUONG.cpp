@@ -13,21 +13,27 @@ int n, m, u, v, s, t;
 vector<vector<int>> graph;
 vector<int> trace;
 
-void bfs(int s) {
+void dfs(int s)
+{
+    stack<int> st;
+    st.push(s);
     vector<bool> vis(n + 1, false);
-    queue<int> q;
-    q.push(s);
-    vis[s] = true;
+    while (!st.empty())
+    {
+        int curPos = st.top();
+        st.pop();
+        vis[curPos] = true;
+        if (curPos == t)
+            return;
 
-    while(!q.empty()) {
-        u = q.front();
-        q.pop();
-        if(u == t) return;
-        for(auto x : graph[u]) {
-            if(!vis[x]) {
-                vis[x] = true;
-                trace[x] = u;
-                q.push(x);
+        for (auto x : graph[curPos])
+        {
+            if (!vis[x])
+            {
+                st.push(curPos);
+                st.push(x);
+                trace[x] = curPos;
+                break;
             }
         }
     }
@@ -36,25 +42,32 @@ void bfs(int s) {
 void testCase()
 {
     cin >> n >> m >> s >> t;
-    graph.assign(n + 1, vector<int>());
-    while(m--) {
+    graph.clear();
+    graph.resize(n + 1);
+    trace.assign(n + 1, 0);
+    while (m--)
+    {
         cin >> u >> v;
         graph[u].push_back(v);
     }
-    trace.assign(n + 1, 0);
-    bfs(s);
-    if(trace[t] == 0) {
+    dfs(s);
+    if (trace[t] == 0)
+    {
         cout << -1;
         return;
     }
-    vector<int> res;
+    stack<int> path;
     int last = t;
-    while(last != 0) {
-        res.push_back(last);
+    while (last != 0)
+    {
+        path.push(last);
         last = trace[last];
     }
-    reverse(res.begin(), res.end());
-    for(auto x : res) cout << x << " ";
+    while (!path.empty())
+    {
+        cout << path.top() << " ";
+        path.pop();
+    }
 }
 
 int main()

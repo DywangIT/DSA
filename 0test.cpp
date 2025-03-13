@@ -1,80 +1,71 @@
+// https://code.ptit.edu.vn/student/question/DSA09026
+// ĐƯỜNG ĐI THEO BFS TRÊN ĐỒ THỊ CÓ HƯỚNG
+
 #include <bits/stdc++.h>
 using namespace std;
-using ll = long long;
-ll mod = 1e15 + 7;
-int n;
-struct matrix
-{
-    ll F[4][4];
-};
-ll mulNumber(ll a, ll b)
-{
-    if (b == 0)
-        return 0;
-    ll ans = mulNumber(a, b / 2);
-    ans = (ans + ans) % mod;
-    if (b % 2 == 1)
-        ans = (ans + a) % mod;
-    return ans;
-}
-matrix operator*(matrix a, matrix b)
-{
-    matrix c;
-    for (int i = 0; i < 4; i++)
-    {
-        for (int j = 0; j < 4; j++)
-        {
-            c.F[i][j] = 0;
-            for (int k = 0; k < 4; k++)
-            {
-                c.F[i][j] = (c.F[i][j] + mulNumber(a.F[i][k], b.F[k][j])) % mod;
+
+int V, E, s, t, u, v;
+vector<vector<int>> G;
+vector<int> tr; // trace
+vector<bool> vs; // visit
+
+void bfs(int s) {
+    queue<int> q;
+    q.push(s);
+    vs[s] = true;
+
+    while (!q.empty()) {
+        u = q.front(); q.pop();
+        if (u == t) return;
+
+        for (int v : G[u]) {
+            if (vs[v] == false) {
+                q.push(v);
+                vs[v] = true;
+                tr[v] = u;
             }
         }
     }
-    return c;
 }
-matrix powMod(matrix a, int n)
-{
-    if (n == 1)
-        return a;
-    matrix x = powMod(a, n / 2);
-    x = x * x;
-    if (n % 2 != 0)
-        x = x * a;
-    return x;
-}
-ll x[] = {6, 3, 2, 1};
-int main()
-{
-    int t;
-    cin >> t;
-    while (t--)
-    {
-        cin >> n;
-        if (!n)
-            cout << 0 << endl;
-        else if (n == 1)
-            cout << 1 << endl;
-        else if (n == 2)
-            cout << 3 << endl;
-        else if (n == 3)
-            cout << 6 << endl;
-        else
-        {
-            matrix a, res;
-            for (int i = 0; i < 4; i++)
-            {
-                for (int j = 0; j < 4; j++)
-                {
-                    a.F[i][j] = 0;
-                }
-            }
-            a.F[0][0] = a.F[0][1] = a.F[0][2] = a.F[0][3] = a.F[1][1] = a.F[1][2] = a.F[1][3] = a.F[2][1] = a.F[3][2] = 1;
-            res = powMod(a, n - 3);
-            ll ans = 0;
-            for (int i = 0; i < 4; ++i)
-                ans = (ans + mulNumber(res.F[0][i], x[i])) % mod;
-            cout << ans << endl;
-        }
+
+void trace() {
+    if (vs[t] == false) {
+        cout << -1;
+        return;
     }
+    stack<int> way;
+    int last = t;
+    while (last != -1) {
+        way.push(last);
+        last = tr[way.top()];
+    }
+    while (!way.empty()) {
+        cout << way.top() << " ";
+        way.pop();
+    }
+}
+
+void testCase() {
+    cin >> V >> E >> s >> t;
+    G.clear(); G.resize(V + 1);
+    vs.clear(); vs.resize(V + 1, 0);
+    tr.clear(); tr.resize(V + 1, -1);
+    while (E--) {
+        cin >> u >> v;
+        G[u].push_back(v);
+    }
+    bfs(s);
+    trace();
+}
+
+int main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL); cout.tie(NULL);
+
+    int T = 1; cin >> T;
+    while (T--) {
+        testCase();
+        cout << "\n";
+    }
+    return 0;
 }
